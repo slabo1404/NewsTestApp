@@ -15,7 +15,7 @@ final class RSSFeedParser {
     
     // MARK: - fetch articles for multiple urls
     
-    func fetchArticlesForMultiple(urls urlStrings: [String]) async throws -> [Article] {
+    func fetchArticlesForMultiple(urls urlStrings: [String]) async throws -> [RSSFeedItem] {
         try await withThrowingTaskGroup(of: [RSSFeedItem].self) { group in
             for urlStr in urlStrings {
                 group.addTask {
@@ -39,16 +39,14 @@ final class RSSFeedParser {
                 throw RSSFeedParserError.noData
             }
             
-            let sortedResult = result.sorted { ($0.pubDate ?? Date.distantPast) > ($1.pubDate ?? Date.distantPast) }
-            
-            return sortedResult.toArticles()
+            return result
         }
     }
     
     // MARK: - fetch articles for single url
     
-    func fetchArticles(for urlString: String) async throws -> [Article] {
-        try await fetchRSSItems(for: urlString).toArticles()
+    func fetchArticles(for urlString: String) async throws -> [RSSFeedItem] {
+        try await fetchRSSItems(for: urlString)
     }
     
     // MARK: - fetch [RSSFeedItem] for single url

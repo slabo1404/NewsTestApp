@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "news.jpg",
+      "filename" : "news_default.jpg",
       "idiom" : "universal",
       "scale" : "1x"
     },

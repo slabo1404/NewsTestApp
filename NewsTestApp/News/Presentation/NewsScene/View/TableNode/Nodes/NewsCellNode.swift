@@ -21,6 +21,7 @@ final class NewsCellNode: ASCellNode {
     
     private let article: Article
     private let displayMode: DisplayMode
+    private let imageSize = CGSize(width: 60, height: 60)
     
     init(article: Article, displayMode: DisplayMode) {
         self.article = article
@@ -31,11 +32,10 @@ final class NewsCellNode: ASCellNode {
         separatorInset = UIEdgeInsets(top: 0, left: 80, bottom: 0, right: 0)
         selectionStyle = .none
         
-        imageNode.style.preferredSize = CGSize(width: 55, height: 34)
+        imageNode.style.preferredSize = imageSize
         imageNode.cornerRadius = 4
         imageNode.cornerRoundingType = .precomposited
         imageNode.isLayerBacked = true
-        imageNode.image = UIImage(named: "news_default")
         
         isReadStatusImageNode.style.preferredSize = CGSize(width: 16, height: 16)
         isReadStatusImageNode.isLayerBacked = true
@@ -65,7 +65,7 @@ final class NewsCellNode: ASCellNode {
         sourceNode.maximumNumberOfLines = 1
         sourceNode.style.flexGrow = 1
         sourceNode.attributedText = NSAttributedString(
-            string: article.source.title,
+            string: article.author,
             attributes: [
                 .foregroundColor: UIColor.gray.withAlphaComponent(0.7),
                 .font: UIFont.systemFont(ofSize: 10)
@@ -84,6 +84,15 @@ final class NewsCellNode: ASCellNode {
         super.didLoad()
         
         // MARK: - Fetch image
+        
+        Task {
+            if let imageUrlString = article.imageUrl,
+               let image = await ImageLoader.shared.loadImage(urlString: imageUrlString) {
+                imageNode.image = image.resize(to: imageSize)
+            } else {
+                imageNode.image = UIImage(named: "news_default")
+            }
+        }
     }
     
     // MARK: - Layout
@@ -105,14 +114,14 @@ final class NewsCellNode: ASCellNode {
         contentVerticalStack.spacing = 8
         contentVerticalStack.style.flexGrow = 1
         contentVerticalStack.style.flexShrink = 1
-        contentVerticalStack.justifyContent = .start
+        contentVerticalStack.justifyContent = .spaceBetween
         contentVerticalStack.alignItems = .stretch
         contentVerticalStack.children = [titlesStack, sourceStatusStack]
         
         let contentStack = ASStackLayoutSpec.horizontal()
         contentStack.spacing = 8
         contentStack.justifyContent = .start
-        contentStack.alignItems = .center
+        contentStack.alignItems = .stretch
         contentStack.children = [imageNode, contentVerticalStack]
         
         let insets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)

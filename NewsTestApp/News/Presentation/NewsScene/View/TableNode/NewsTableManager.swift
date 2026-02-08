@@ -27,11 +27,9 @@ final class NewsTableManager: NSObject {
     }
 }
 
+// MARK: - ASTableDataSource
+
 extension NewsTableManager: ASTableDataSource {
-//    func numberOfSections(in tableNode: ASTableNode) -> Int {
-//        articles.count
-//    }
-    
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
         articles.count
     }
@@ -43,8 +41,9 @@ extension NewsTableManager: ASTableDataSource {
             return NewsCellNode(article: article, displayMode: displayMode)
         }
     }
-
 }
+
+// MARK: - ASTableDelegate
 
 extension NewsTableManager: ASTableDelegate {
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {

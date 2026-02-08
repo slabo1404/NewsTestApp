@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F980D5832F361A320079A45A /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = F980D5822F361A320079A45A /* Alamofire */; };
 		F980D5B92F361C2F0079A45A /* DITranquillity in Frameworks */ = {isa = PBXBuildFile; productRef = F980D5B82F361C2F0079A45A /* DITranquillity */; };
 		F980D5BC2F361CB20079A45A /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = F980D5BB2F361CB20079A45A /* SnapKit */; };
 		F980D5BF2F361D420079A45A /* AsyncDisplayKit in Frameworks */ = {isa = PBXBuildFile; productRef = F980D5BE2F361D420079A45A /* AsyncDisplayKit */; };
@@ -46,7 +45,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F980D5BC2F361CB20079A45A /* SnapKit in Frameworks */,
-				F980D5832F361A320079A45A /* Alamofire in Frameworks */,
 				F980D5B92F361C2F0079A45A /* DITranquillity in Frameworks */,
 				F980D6132F3631DB0079A45A /* FeedKit in Frameworks */,
 				F980D5C22F361DC60079A45A /* RealmSwift in Frameworks */,
@@ -93,7 +91,6 @@
 			);
 			name = NewsTestApp;
 			packageProductDependencies = (
-				F980D5822F361A320079A45A /* Alamofire */,
 				F980D5B82F361C2F0079A45A /* DITranquillity */,
 				F980D5BB2F361CB20079A45A /* SnapKit */,
 				F980D5BE2F361D420079A45A /* AsyncDisplayKit */,
@@ -129,7 +126,6 @@
 			mainGroup = F96BF87A2F35DCEF0042D789;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				F980D5812F361A320079A45A /* XCRemoteSwiftPackageReference "Alamofire" */,
 				F980D5B72F361C2F0079A45A /* XCRemoteSwiftPackageReference "DITranquillity" */,
 				F980D5BA2F361CB20079A45A /* XCRemoteSwiftPackageReference "SnapKit" */,
 				F980D5BD2F361D420079A45A /* XCRemoteSwiftPackageReference "Texture" */,
@@ -384,14 +380,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		F980D5812F361A320079A45A /* XCRemoteSwiftPackageReference "Alamofire" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
-			requirement = {
-				kind = exactVersion;
-				version = 5.9.0;
-			};
-		};
 		F980D5B72F361C2F0079A45A /* XCRemoteSwiftPackageReference "DITranquillity" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ivlevAstef/DITranquillity.git";
@@ -435,11 +423,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		F980D5822F361A320079A45A /* Alamofire */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F980D5812F361A320079A45A /* XCRemoteSwiftPackageReference "Alamofire" */;
-			productName = Alamofire;
-		};
 		F980D5B82F361C2F0079A45A /* DITranquillity */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F980D5B72F361C2F0079A45A /* XCRemoteSwiftPackageReference "DITranquillity" */;

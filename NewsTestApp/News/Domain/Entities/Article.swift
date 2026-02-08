@@ -7,20 +7,19 @@
 
 import Foundation
 
-struct Article: Identifiable {
+struct Article: Identifiable, Sendable {
     let id: String
     let title: String
     let description: String
     let link: String
-    var source: ArticleSource = .rbc
-    var isRead: Bool = false
-    
-    init(id: String, title: String, description: String, link: String) {
-        self.id = id
-        self.title = title
-        self.description = description
-        self.link = link
-        self.source = ArticleSource.detectSource(from: link)
-        self.isRead = Bool.random()
+    let author: String
+    let imageUrl: String?
+    let date: Date
+    var isRead: Bool
+}
+
+extension Article: Comparable {
+    static func < (lhs: Article, rhs: Article) -> Bool {
+        lhs.date < rhs.date
     }
 }

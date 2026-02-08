@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import DITranquillity
 
 final class MenuTabBarController: UITabBarController {
     // MARK: - Lifecycle
@@ -13,10 +14,8 @@ final class MenuTabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let viewModel: INewsViewModel = NewsViewModel()
-        let newsViewController = NewsViewController(viewModel: viewModel)
+        let newsViewController: NewsViewController = AppDependencyContainer.container.resolve()
         let newsNavigationController = UINavigationController(rootViewController: newsViewController)
-        newsNavigationController.navigationBar.prefersLargeTitles = true
                 
         newsNavigationController.tabBarItem = UITabBarItem(
             title: "Новости",

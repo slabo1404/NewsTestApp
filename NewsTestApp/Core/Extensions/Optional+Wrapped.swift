@@ -1,5 +1,5 @@
 //
-//  Extensions.swift
+//  Optional+Wrapped.swift
 //  NewsTestApp
 //
 //  Created by Вячеслав Болбат on 6.02.26.
