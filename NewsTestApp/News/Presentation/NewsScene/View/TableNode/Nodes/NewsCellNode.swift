@@ -6,7 +6,6 @@
 //
 
 import AsyncDisplayKit
-import UIKit
 
 final class NewsCellNode: ASCellNode {
     // MARK: - Nodes
@@ -15,7 +14,7 @@ final class NewsCellNode: ASCellNode {
     private let isReadStatusImageNode = ASImageNode()
     private let titleNode = ASTextNode()
     private let descriptionNode = ASTextNode()
-    private let sourceNode = ASTextNode()
+    private let authorNode = ASTextNode()
     
     // MARK: - Private properties
     
@@ -29,7 +28,7 @@ final class NewsCellNode: ASCellNode {
         super.init()
         
         backgroundColor = UIColor.white
-        separatorInset = UIEdgeInsets(top: 0, left: 80, bottom: 0, right: 0)
+        separatorInset = UIEdgeInsets(top: 0, left: 84, bottom: 0, right: 0)
         selectionStyle = .none
         
         imageNode.style.preferredSize = imageSize
@@ -61,10 +60,10 @@ final class NewsCellNode: ASCellNode {
                 .font: UIFont.systemFont(ofSize: 12)
             ])
         
-        sourceNode.isLayerBacked = true
-        sourceNode.maximumNumberOfLines = 1
-        sourceNode.style.flexGrow = 1
-        sourceNode.attributedText = NSAttributedString(
+        authorNode.isLayerBacked = true
+        authorNode.maximumNumberOfLines = 1
+        authorNode.style.flexGrow = 1
+        authorNode.attributedText = NSAttributedString(
             string: article.author,
             attributes: [
                 .foregroundColor: UIColor.gray.withAlphaComponent(0.7),
@@ -75,10 +74,10 @@ final class NewsCellNode: ASCellNode {
         addSubnode(isReadStatusImageNode)
         addSubnode(titleNode)
         addSubnode(descriptionNode)
-        addSubnode(sourceNode)
+        addSubnode(authorNode)
     }
     
-    // MARK: - Overriden
+    // MARK: - Lifecycle
     
     override func didLoad() {
         super.didLoad()
@@ -100,8 +99,8 @@ final class NewsCellNode: ASCellNode {
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         let sourceStatusStack = ASStackLayoutSpec.horizontal()
         sourceStatusStack.children = article.isRead
-        ? [sourceNode, isReadStatusImageNode]
-        : [sourceNode]
+        ? [authorNode, isReadStatusImageNode]
+        : [authorNode]
         
         let titlesStack = ASStackLayoutSpec.vertical()
         titlesStack.spacing = 4

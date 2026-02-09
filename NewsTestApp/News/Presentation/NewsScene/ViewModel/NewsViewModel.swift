@@ -69,8 +69,11 @@ final class NewsViewModel: ObservableObject, INewsViewModel {
     // MARK: - Inputs
     
     func fetchArticles() async throws {
+        let sources = SharedPreferences.selectedSources
+        let urls = sources.map { (ArticleSource(rawValue: $0)?.url).orEmpty }
+        
         do {
-            let stream = try await fetchNewsUseCase.start(urls: ArticleSource.actualURLs)
+            let stream = try await fetchNewsUseCase.start(urls: urls)
             
             for try await updatedAtritcle in stream {
                 let oldArticles = articles

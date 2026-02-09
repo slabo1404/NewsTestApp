@@ -16,15 +16,15 @@ final class MenuTabBarController: UITabBarController {
         
         let newsViewController: NewsViewController = AppDependencyContainer.container.resolve()
         let newsNavigationController = UINavigationController(rootViewController: newsViewController)
-                
         newsNavigationController.tabBarItem = UITabBarItem(
             title: "Новости",
             image: UIImage(systemName: "text.bubble.badge.clock"),
             selectedImage: UIImage(systemName: "text.bubble.badge.clock.fill")
         )
         
-        let settingsViewController = UIViewController()
-        settingsViewController.tabBarItem = UITabBarItem(
+        let settingsViewController: SettingsViewCotroller = AppDependencyContainer.container.resolve()
+        let settingsNavigationController = UINavigationController(rootViewController: settingsViewController)
+        settingsNavigationController.tabBarItem = UITabBarItem(
             title: "Настройки",
             image: UIImage(systemName: "rectangle.grid.1x3"),
             selectedImage: UIImage(systemName: "rectangle.grid.1x3.fill")
@@ -32,7 +32,7 @@ final class MenuTabBarController: UITabBarController {
         
         viewControllers = [
             newsNavigationController,
-            settingsViewController
+            settingsNavigationController
         ]
     }
 }

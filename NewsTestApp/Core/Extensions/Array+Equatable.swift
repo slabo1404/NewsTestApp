@@ -1,5 +1,5 @@
 //
-//  Untitled.swift
+//  Array+Equatable.swift
 //  NewsTestApp
 //
 //  Created by Вячеслав Болбат on 8.02.26.

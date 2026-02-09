@@ -43,7 +43,7 @@ fileprivate actor ImageCache {
     
     private init() {}
     
-    private var cache = NSCache<NSString, UIImage>()
+    private let cache = NSCache<NSString, UIImage>()
     
     func get(key: String) async -> UIImage? {
         cache.object(forKey: NSString(string: key))

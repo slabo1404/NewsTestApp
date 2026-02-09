@@ -5,7 +5,6 @@
 //  Created by Вячеслав Болбат on 6.02.26.
 //
 
-
 import AsyncDisplayKit
 import Combine
 import SafariServices
@@ -16,10 +15,10 @@ final class NewsViewController: UIViewController {
     // MARK: - Nodes
     
     private let tableNode: ASTableNode = {
-        let tableNode = ASTableNode(style: .grouped)
+        let tableNode = ASTableNode(style: .plain)
         tableNode.view.tableFooterView = UIView()
         tableNode.view.backgroundColor = UIColor.white
-        tableNode.view.separatorColor = UIColor.gray
+        tableNode.view.separatorColor = UIColor.gray.withAlphaComponent(0.8)
         tableNode.alpha = 0
         return tableNode
     }()
@@ -32,6 +31,11 @@ final class NewsViewController: UIViewController {
         progressView.color = UIColor.black
         progressView.hidesWhenStopped = true
         return progressView
+    }()
+    
+    private let timerView: TimerView = {
+        let timerView = TimerView(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 80, height: 32)))
+        return timerView
     }()
     
     // MARK: - Private properties
@@ -59,20 +63,22 @@ final class NewsViewController: UIViewController {
         setupUI()
         setupViews()
         bindToViewModel()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
         
         Task {
             try await viewModel.fetchArticles()
         }
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        
+    }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        tableNode.frame = CGRect(origin: CGPoint.zero, size: view.frame.size)
+        tableNode.frame = view.bounds
     }
 }
 
@@ -81,12 +87,13 @@ final class NewsViewController: UIViewController {
 private extension NewsViewController {
     func setupNavigationBar() {
         navigationItem.title = "Новости"
-        navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "arrow.clockwise"),
             style: .plain,
             target: self,
             action: #selector(didChangeLayout))
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: timerView)
     }
     
     func setupUI() {
@@ -99,9 +106,13 @@ private extension NewsViewController {
     }
     
     func setupViews() {
+        timerView.delegate = self
+        
         tableNode.dataSource = tableManager
         tableNode.delegate = tableManager
         tableManager.delegate = self
+        
+        timerView.startTimer(timeLimit: 10)
     }
 }
 
@@ -174,6 +185,18 @@ private extension NewsViewController {
         displayMode = displayMode == .normal ? DisplayMode.expanded : DisplayMode.normal
         tableManager.updateDisplayMode(displayMode)
         tableNode.reloadData()
+    }
+}
+
+// MARK: - TimerViewDelegate
+
+extension NewsViewController: TimerViewDelegate {
+    func timeIsUp() {
+        timerView.startTimer(timeLimit: 10)
+        
+        Task {
+            try await viewModel.fetchArticles()
+        }
     }
 }
 

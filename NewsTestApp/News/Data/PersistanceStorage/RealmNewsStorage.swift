@@ -11,7 +11,7 @@ import RealmSwift
 import FeedKit
 
 final class RealmNewsStorage: INewsStorage {
-    private let newsStorageQueue = DispatchQueue(label: "NewsStorage", qos: .utility)
+    private let newsStorageQueue = DispatchQueue(label: "NewsStorageQueue", qos: .utility)
     
     func fetchNews() async -> [Article] {
         await withCheckedContinuation { continuation in

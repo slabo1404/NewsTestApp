@@ -15,6 +15,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
+        if SharedPreferences.isFirstAppLaunch {
+            SharedPreferences.selectedSources = [ArticleSource.vedomosti.rawValue, ArticleSource.rbc.rawValue]
+            SharedPreferences.timerInterval = 30
+            SharedPreferences.isUsеImageCache = true
+            SharedPreferences.isShowDescription = false
+            SharedPreferences.isFirstAppLaunch = false
+        }
+        
         window = UIWindow(windowScene: windowScene)
         window?.rootViewController = MenuTabBarController()
         window?.makeKeyAndVisible()

@@ -11,6 +11,7 @@ final class AppDependencyContainer: DIFramework {
     static let container: DIContainer = {
         let container = DIContainer()
         container.append(framework: NewsFramework.self)
+        container.append(framework: SettingsFramework.self)
         
         return container
     }()
