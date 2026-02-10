@@ -33,9 +33,31 @@ final class NewsViewController: UIViewController {
         return progressView
     }()
     
+    private lazy var footerView: UIView = {
+        let view = UIView(
+            frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 280)
+        )
+        view.backgroundColor = UIColor.white
+        
+        let label = UILabel()
+        label.textColor = UIColor.black
+        label.textAlignment = NSTextAlignment.center
+        label.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
+        label.text = "Хороших новостей пока нет"
+        
+        view.addSubview(label)
+        label.frame = view.bounds
+        
+        return view
+    }()
+    
     private let timerView: TimerView = {
         let timerView = TimerView(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 80, height: 32)))
         return timerView
+    }()
+    
+    private lazy var leftBarTimerView: UIBarButtonItem = {
+        return UIBarButtonItem(customView: timerView)
     }()
     
     // MARK: - Private properties
@@ -43,7 +65,6 @@ final class NewsViewController: UIViewController {
     private let viewModel: INewsViewModel
     private let tableManager = NewsTableManager()
     private var cancellable = Set<AnyCancellable>()
-    private var displayMode: DisplayMode = .normal
     
     init(viewModel: INewsViewModel) {
         self.viewModel = viewModel
@@ -63,22 +84,19 @@ final class NewsViewController: UIViewController {
         setupUI()
         setupViews()
         bindToViewModel()
+        addUpdateNewsObserver()
+        startTimerIfNeeded()
         
         Task {
             try await viewModel.fetchArticles()
         }
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        
-    }
-    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
         tableNode.frame = view.bounds
+        progressView.center = view.center
     }
 }
 
@@ -87,22 +105,11 @@ final class NewsViewController: UIViewController {
 private extension NewsViewController {
     func setupNavigationBar() {
         navigationItem.title = "Новости"
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            image: UIImage(systemName: "arrow.clockwise"),
-            style: .plain,
-            target: self,
-            action: #selector(didChangeLayout))
-        
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: timerView)
     }
     
     func setupUI() {
         view.addSubnode(tableNode)
         view.addSubview(progressView)
-        
-        progressView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-        }
     }
     
     func setupViews() {
@@ -111,8 +118,31 @@ private extension NewsViewController {
         tableNode.dataSource = tableManager
         tableNode.delegate = tableManager
         tableManager.delegate = self
+    }
+    
+    func startTimerIfNeeded() {
+        let timerInterval = SharedPreferences.timerInterval
         
-        timerView.startTimer(timeLimit: 10)
+        guard timerInterval > 0 else {
+            navigationItem.leftBarButtonItem = nil
+            timerView.stopTimer()
+            return
+        }
+        
+        if navigationItem.leftBarButtonItem == nil {
+            navigationItem.leftBarButtonItem = leftBarTimerView
+        }
+        
+        timerView.startTimer(timeLimit: TimeInterval(timerInterval))
+    }
+    
+    func addUpdateNewsObserver() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleUpdateNews(notification:)),
+            name: .updateNews,
+            object: nil
+        )
     }
 }
 
@@ -123,7 +153,13 @@ private extension NewsViewController {
         viewModel.articlesPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] articles in
-                self?.tableManager.updateArticles(articles, displayMode: self?.displayMode ?? .normal)
+                self?.tableNode.view.tableFooterView = articles.isEmpty ? self?.footerView : nil
+                
+                self?.tableManager.updateArticles(
+                    articles,
+                    showDescription: SharedPreferences.showDescription,
+                    useImageCache: SharedPreferences.usеImageCache
+                )
             }
             .store(in: &cancellable)
         
@@ -149,7 +185,7 @@ private extension NewsViewController {
             .sink { [weak self] message in
                 guard let message else { return }
                 
-                self?.showAlertControlelr(with: message)
+                self?.showAlertController(with: message)
             }
             .store(in: &cancellable)
         
@@ -160,7 +196,7 @@ private extension NewsViewController {
                     if !changes.insertions.isEmpty {
                         self?.tableNode.insertRows(at: changes.insertions, with: .automatic)
                     }
-
+                    
                     if !changes.removals.isEmpty {
                         self?.tableNode.deleteRows(at: changes.removals, with: .automatic)
                     }
@@ -181,10 +217,19 @@ private extension NewsViewController {
 // MARK: - Events
 
 private extension NewsViewController {
-    @objc func didChangeLayout() {
-        displayMode = displayMode == .normal ? DisplayMode.expanded : DisplayMode.normal
-        tableManager.updateDisplayMode(displayMode)
+    @objc func handleUpdateNews(notification: Notification) {
+        let showDescription = SharedPreferences.showDescription
+        let usеImageCache = SharedPreferences.usеImageCache
+        
+        tableManager.updateShowDesription(showDescription)
+        tableManager.updateUseImagecache(usеImageCache)
         tableNode.reloadData()
+        
+        Task {
+            try await viewModel.fetchArticles()
+        }
+        
+        startTimerIfNeeded()
     }
 }
 
@@ -192,11 +237,11 @@ private extension NewsViewController {
 
 extension NewsViewController: TimerViewDelegate {
     func timeIsUp() {
-        timerView.startTimer(timeLimit: 10)
-        
         Task {
             try await viewModel.fetchArticles()
         }
+        
+        startTimerIfNeeded()
     }
 }
 
@@ -216,16 +261,16 @@ extension NewsViewController: NewsTableManagerDelegate {
 // MARK: - Show Alert
 
 private extension NewsViewController {
-    func showAlertControlelr(with message: String) {
+    func showAlertController(with message: String) {
         let alert = UIAlertController(
             title: "",
             message: message,
             preferredStyle: .actionSheet
         )
-
+        
         let okAction = UIAlertAction(title: "OK", style: .cancel)
         alert.addAction(okAction)
         
-        present(alert, animated: true)
+        safePresent(alert, animated: true)
     }
 }

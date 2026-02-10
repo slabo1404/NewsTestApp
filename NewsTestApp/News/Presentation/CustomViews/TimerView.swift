@@ -39,8 +39,6 @@ final class TimerView: UIView {
         }
     }
     
-    private var backgroundTaskID: UIBackgroundTaskIdentifier?
-    
     // MARK: - Internal properties
     
     weak var delegate: TimerViewDelegate?
@@ -66,7 +64,7 @@ final class TimerView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        timeLabel.frame = CGRect(x: 0, y: 0, width: bounds.width, height: bounds.height)
+        timeLabel.frame = bounds
     }
 }
 
@@ -74,7 +72,6 @@ final class TimerView: UIView {
 
 private extension TimerView {
     func setupUI() {
-        clipsToBounds = true
         addSubview(timeLabel)
     }
 }
@@ -96,13 +93,10 @@ extension TimerView {
 
 extension TimerView {
     func startTimer(timeLimit: TimeInterval) {
+        seconds = timeLimit
+        
         stopTimer()
         
-        backgroundTaskID = UIApplication.shared.beginBackgroundTask { [weak self] in
-            self?.stopTimer()
-        }
-        
-        seconds = timeLimit
         let timer = Timer.scheduledTimer(
             timeInterval: 1,
             target: self,
@@ -118,10 +112,5 @@ extension TimerView {
     func stopTimer() {
         timer?.invalidate()
         timer = nil
-        
-        if let taskID = backgroundTaskID, taskID != .invalid {
-            UIApplication.shared.endBackgroundTask(taskID)
-        }
-        backgroundTaskID = .invalid
     }
 }

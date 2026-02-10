@@ -91,7 +91,7 @@ extension SettingsViewCotroller: SettingsTableManagerDelegate {
                 values: viewModel.defaultTimeIntervals,
                 selectedValues: ["\(SharedPreferences.timerInterval)"],
                 allowMultipleSelection: false,
-                title: "Выберите новостной источник") { [weak self] values in
+                title: "Выберите интервал обновления") { [weak self] values in
                     let selectedValue = values.first.orEmpty
                     
                     if let intValue = Int(selectedValue) {
@@ -101,6 +101,8 @@ extension SettingsViewCotroller: SettingsTableManagerDelegate {
                         SharedPreferences.timerInterval = 0
                         self?.viewModel.updateTimerInterval(value: 0)
                     }
+                    
+                    self?.sendUpdateNewsNotification()
                 }
             
         } else if setting.type == .newsSource {
@@ -108,9 +110,18 @@ extension SettingsViewCotroller: SettingsTableManagerDelegate {
                 values: ArticleSource.allCases.map { $0.rawValue },
                 selectedValues: SharedPreferences.selectedSources,
                 allowMultipleSelection: true,
-                title: "Выберите интервал обновления") {
+                title: "Выберите новостной источник") { [weak self] in
                     SharedPreferences.selectedSources = $0
+                    self?.sendUpdateNewsNotification()
                 }
+        } else if setting.type == .clearCache {
+            Task { [weak self] in
+                await ImageLoader.shared.clearCache()
+                
+                await MainActor.run {
+                    self?.sendUpdateNewsNotification()
+                }
+            }
         }
     }
     
@@ -120,6 +131,8 @@ extension SettingsViewCotroller: SettingsTableManagerDelegate {
         } else if setting.type == .showDescription {
             viewModel.updateShowDescription(value: value)
         }
+        
+        sendUpdateNewsNotification()
     }
 }
 
@@ -140,5 +153,13 @@ private extension SettingsViewCotroller {
         }
         
         navigationController?.pushViewController(chooserViewController, animated: true)
+    }
+}
+
+// MARK: - Send notification (update news)
+
+private extension SettingsViewCotroller {
+    func sendUpdateNewsNotification() {
+        NotificationCenter.default.post(name: .updateNews, object: nil)
     }
 }

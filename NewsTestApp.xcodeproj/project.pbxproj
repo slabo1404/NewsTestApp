@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		F980D5B92F361C2F0079A45A /* DITranquillity in Frameworks */ = {isa = PBXBuildFile; productRef = F980D5B82F361C2F0079A45A /* DITranquillity */; };
-		F980D5BC2F361CB20079A45A /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = F980D5BB2F361CB20079A45A /* SnapKit */; };
 		F980D5BF2F361D420079A45A /* AsyncDisplayKit in Frameworks */ = {isa = PBXBuildFile; productRef = F980D5BE2F361D420079A45A /* AsyncDisplayKit */; };
 		F980D5C22F361DC60079A45A /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F980D5C12F361DC60079A45A /* RealmSwift */; };
 		F980D6132F3631DB0079A45A /* FeedKit in Frameworks */ = {isa = PBXBuildFile; productRef = F980D6122F3631DB0079A45A /* FeedKit */; };
@@ -44,7 +43,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F980D5BC2F361CB20079A45A /* SnapKit in Frameworks */,
 				F980D5B92F361C2F0079A45A /* DITranquillity in Frameworks */,
 				F980D6132F3631DB0079A45A /* FeedKit in Frameworks */,
 				F980D5C22F361DC60079A45A /* RealmSwift in Frameworks */,
@@ -92,7 +90,6 @@
 			name = NewsTestApp;
 			packageProductDependencies = (
 				F980D5B82F361C2F0079A45A /* DITranquillity */,
-				F980D5BB2F361CB20079A45A /* SnapKit */,
 				F980D5BE2F361D420079A45A /* AsyncDisplayKit */,
 				F980D5C12F361DC60079A45A /* RealmSwift */,
 				F980D6122F3631DB0079A45A /* FeedKit */,
@@ -127,7 +124,6 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				F980D5B72F361C2F0079A45A /* XCRemoteSwiftPackageReference "DITranquillity" */,
-				F980D5BA2F361CB20079A45A /* XCRemoteSwiftPackageReference "SnapKit" */,
 				F980D5BD2F361D420079A45A /* XCRemoteSwiftPackageReference "Texture" */,
 				F980D5C02F361DC60079A45A /* XCRemoteSwiftPackageReference "realm-swift" */,
 				F980D6112F3631DB0079A45A /* XCRemoteSwiftPackageReference "FeedKit" */,
@@ -388,14 +384,6 @@
 				version = 5.0.0;
 			};
 		};
-		F980D5BA2F361CB20079A45A /* XCRemoteSwiftPackageReference "SnapKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
-			requirement = {
-				kind = exactVersion;
-				version = 5.7.1;
-			};
-		};
 		F980D5BD2F361D420079A45A /* XCRemoteSwiftPackageReference "Texture" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/shimastripe/Texture.git";
@@ -427,11 +415,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F980D5B72F361C2F0079A45A /* XCRemoteSwiftPackageReference "DITranquillity" */;
 			productName = DITranquillity;
-		};
-		F980D5BB2F361CB20079A45A /* SnapKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F980D5BA2F361CB20079A45A /* XCRemoteSwiftPackageReference "SnapKit" */;
-			productName = SnapKit;
 		};
 		F980D5BE2F361D420079A45A /* AsyncDisplayKit */ = {
 			isa = XCSwiftPackageProductDependency;

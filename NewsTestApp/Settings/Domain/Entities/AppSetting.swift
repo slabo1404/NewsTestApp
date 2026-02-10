@@ -16,6 +16,7 @@ struct AppSetting {
         case timerIntervar
         case useImageCache
         case showDescription
+        case clearCache
     }
 
     enum InteractionType: String {

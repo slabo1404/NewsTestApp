@@ -55,6 +55,7 @@ final class ChooserViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
         tableNode.frame = view.bounds
     }
 }

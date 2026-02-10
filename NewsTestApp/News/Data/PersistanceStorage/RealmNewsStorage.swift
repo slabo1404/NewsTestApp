@@ -28,6 +28,7 @@ final class RealmNewsStorage: INewsStorage {
         }
     }
     
+    @discardableResult
     func saveNews(_ articles: [ArticleObject]) -> [Article] {
         var articlesToReturn: [Article] = []
         

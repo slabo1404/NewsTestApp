@@ -19,12 +19,14 @@ final class NewsCellNode: ASCellNode {
     // MARK: - Private properties
     
     private let article: Article
-    private let displayMode: DisplayMode
+    private let showDescription: Bool
+    private let useImageCache: Bool
     private let imageSize = CGSize(width: 60, height: 60)
     
-    init(article: Article, displayMode: DisplayMode) {
+    init(article: Article, showDescription: Bool, useImageCache: Bool) {
         self.article = article
-        self.displayMode = displayMode
+        self.showDescription = showDescription
+        self.useImageCache = useImageCache
         super.init()
         
         backgroundColor = UIColor.white
@@ -35,6 +37,7 @@ final class NewsCellNode: ASCellNode {
         imageNode.cornerRadius = 4
         imageNode.cornerRoundingType = .precomposited
         imageNode.isLayerBacked = true
+        imageNode.image = UIImage(named: "news_default")
         
         isReadStatusImageNode.style.preferredSize = CGSize(width: 16, height: 16)
         isReadStatusImageNode.isLayerBacked = true
@@ -86,10 +89,8 @@ final class NewsCellNode: ASCellNode {
         
         Task {
             if let imageUrlString = article.imageUrl,
-               let image = await ImageLoader.shared.loadImage(urlString: imageUrlString) {
+               let image = await ImageLoader.shared.loadImage(urlString: imageUrlString, useCache: useImageCache) {
                 imageNode.image = image.resize(to: imageSize)
-            } else {
-                imageNode.image = UIImage(named: "news_default")
             }
         }
     }
@@ -105,10 +106,10 @@ final class NewsCellNode: ASCellNode {
         let titlesStack = ASStackLayoutSpec.vertical()
         titlesStack.spacing = 4
         titlesStack.justifyContent = .start
-        titlesStack.children = displayMode == .expanded && !article.description.isEmpty
+        titlesStack.children = showDescription && !article.description.isEmpty
         ? [titleNode, descriptionNode]
         : [titleNode]
-      
+        
         let contentVerticalStack = ASStackLayoutSpec.vertical()
         contentVerticalStack.spacing = 8
         contentVerticalStack.style.flexGrow = 1

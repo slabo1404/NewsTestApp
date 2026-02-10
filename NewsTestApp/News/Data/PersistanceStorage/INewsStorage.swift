@@ -10,6 +10,7 @@ import FeedKit
 
 protocol INewsStorage {
     func fetchNews() async -> [Article]
+    @discardableResult
     func saveNews(_ articles: [ArticleObject]) -> [Article]
     func setReadingStatus(articleID: String)
 }

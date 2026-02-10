@@ -27,8 +27,8 @@ struct SharedPreferences {
     static var timerInterval: Int
     
     @UserDefault(key: Keys.usеImageCache.rawValue, defaultValue: true)
-    static var isUsеImageCache: Bool
+    static var usеImageCache: Bool
     
     @UserDefault(key: Keys.showDescription.rawValue, defaultValue: false)
-    static var isShowDescription: Bool
+    static var showDescription: Bool
 }

@@ -18,8 +18,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if SharedPreferences.isFirstAppLaunch {
             SharedPreferences.selectedSources = [ArticleSource.vedomosti.rawValue, ArticleSource.rbc.rawValue]
             SharedPreferences.timerInterval = 30
-            SharedPreferences.isUsеImageCache = true
-            SharedPreferences.isShowDescription = false
+            SharedPreferences.usеImageCache = true
+            SharedPreferences.showDescription = false
             SharedPreferences.isFirstAppLaunch = false
         }
         

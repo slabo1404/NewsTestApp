@@ -17,13 +17,16 @@ final class RSSFeedParser {
     
     func fetchArticlesForMultiple(urls urlStrings: [String]) async throws -> [RSSFeedItem] {
         try await withThrowingTaskGroup(of: [RSSFeedItem].self) { group in
+            guard !urlStrings.isEmpty else {
+                throw RSSFeedParserError.emptyUrls
+            }
+            
             for urlStr in urlStrings {
                 group.addTask {
-//                    try await self.fetchRSSItems(for: urlStr)
                     do {
                         return try await self.fetchRSSItems(for: urlStr)
                     } catch {
-                        print("Неверынй url: \(urlStr)")
+                        print("Неверный url: \(urlStr)")
                         return []
                     }
                 }
@@ -36,7 +39,7 @@ final class RSSFeedParser {
             }
             
             guard !result.isEmpty else {
-                throw RSSFeedParserError.noData
+                throw RSSFeedParserError.noFetchedData
             }
             
             return result
@@ -59,7 +62,7 @@ final class RSSFeedParser {
         let feed = try await Feed(remoteURL: url)
         
         guard case .rss(let rssFeed) = feed else {
-            throw RSSFeedParserError.noData
+            throw RSSFeedParserError.noFetchedData
         }
         
         return rssFeed.channel?.items ?? []

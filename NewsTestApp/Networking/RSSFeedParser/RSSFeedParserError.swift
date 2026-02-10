@@ -8,15 +8,18 @@
 import Foundation
 
 enum RSSFeedParserError: Error {
+    case emptyUrls
     case invalidURL
-    case noData
+    case noFetchedData
     
     var errorDescription: String? {
         switch self {
+        case .emptyUrls:
+            "Выберите хотя бы один источник"
         case .invalidURL:
             "Неверный url"
-        case .noData:
-            "Данные отсутствуют"
+        case .noFetchedData:
+            "Ошибка загрузки данных"
         }
     }
 }

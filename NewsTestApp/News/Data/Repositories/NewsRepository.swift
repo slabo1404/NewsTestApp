@@ -30,7 +30,15 @@ extension NewsRepository: INewsRepository {
                     
                     continuation.finish()
                 } catch {
-                    continuation.finish(throwing: error)
+                    switch error {
+                    case RSSFeedParserError.emptyUrls:
+                        newsStorage.saveNews([])
+                        continuation.yield([])
+                        continuation.finish(throwing: error)
+                    default:
+                        continuation.finish(throwing: error)
+                    }
+                    
                 }
             }
             

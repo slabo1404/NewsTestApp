@@ -13,17 +13,23 @@ protocol NewsTableManagerDelegate: AnyObject {
 
 final class NewsTableManager: NSObject {
     private var articles = [Article]()
-    private var displayMode: DisplayMode = .normal
+    private var showDescription: Bool = false
+    private var useImageCache = true
     
     weak var delegate: NewsTableManagerDelegate?
     
-    func updateArticles(_ articles: [Article], displayMode: DisplayMode) {
+    func updateArticles(_ articles: [Article], showDescription: Bool, useImageCache: Bool) {
         self.articles = articles
-        self.displayMode = displayMode
+        self.showDescription = showDescription
+        self.useImageCache = useImageCache
     }
     
-    func updateDisplayMode(_ displayMode: DisplayMode) {
-        self.displayMode = displayMode
+    func updateShowDesription(_ showDescription: Bool) {
+        self.showDescription = showDescription
+    }
+    
+    func updateUseImagecache(_ useImageCache: Bool) {
+        self.useImageCache = useImageCache
     }
 }
 
@@ -36,9 +42,15 @@ extension NewsTableManager: ASTableDataSource {
     
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         let article = articles[indexPath.row]
-        let displayMode = displayMode
+        let showDescription = showDescription
+        let useImageCache = useImageCache
+        
         return {
-            return NewsCellNode(article: article, displayMode: displayMode)
+            return NewsCellNode(
+                article: article,
+                showDescription: showDescription,
+                useImageCache: useImageCache
+            )
         }
     }
 }

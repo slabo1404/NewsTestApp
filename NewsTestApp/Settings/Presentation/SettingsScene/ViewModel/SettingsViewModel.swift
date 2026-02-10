@@ -23,37 +23,44 @@ protocol ISettingsViewModel: SettingsViewModelInput, SettingsViewModelOutput {}
 
 final class SettingsViewModel: ObservableObject, ISettingsViewModel {
     @Published private var settings: [AppSetting] = [
-        
-        .init(title: "Выберите новостной источник",
-              type: .newsSource,
-              action: .select,
-              value: 0),
+        .init(
+            title: "Выберите новостной источник",
+            type: .newsSource,
+            action: .select,
+            value: 0),
         .init(
             title: "Выберите интервал обновления",
             type: .timerIntervar, action: .select,
             value: SharedPreferences.timerInterval
         ),
-        .init(title: "Кэшировать изображения в ленте",
-              type: .useImageCache,
-              action: .switcher,
-              value: SharedPreferences.isUsеImageCache ? 1 : 0
+        .init(
+            title: "Показывать описание новости",
+            type: .showDescription,
+            action: .switcher,
+            value: SharedPreferences.showDescription ? 1 : 0
         ),
-        .init(title: "Показывать описание новости",
-              type: .showDescription,
-              action: .switcher,
-              value: SharedPreferences.isShowDescription ? 1 : 0
+        .init(
+            title: "Кэшировать изображения в ленте",
+            type: .useImageCache,
+            action: .switcher,
+            value: SharedPreferences.usеImageCache ? 1 : 0
+        ),
+        .init(
+            title: "Очистить кэш",
+            type: .clearCache,
+            action: .select,
+            value: 0
         )
     ]
     
-    // Inputs
+    // Outputs
     
     var settingsPublisher: AnyPublisher<[AppSetting], Never>  {
         $settings.eraseToAnyPublisher()
     }
-    
-    // Outputs
-    
     var defaultTimeIntervals = ["15", "30", "60", "120", "Выключить"]
+    
+    // Inputs
     
     func updateTimerInterval(value: Int) {
         guard let index = settings.firstIndex(where: { $0.type == .timerIntervar }) else { return }
@@ -65,14 +72,14 @@ final class SettingsViewModel: ObservableObject, ISettingsViewModel {
     func updateUseImageCache(value: Bool) {
         guard let index = settings.firstIndex(where: { $0.type == .useImageCache }) else { return }
         
-        SharedPreferences.isUsеImageCache = value
+        SharedPreferences.usеImageCache = value
         updateSetting(on: index, with: value ? 1 : 0)
     }
     
     func updateShowDescription(value: Bool) {
         guard let index = settings.firstIndex(where: { $0.type == .showDescription }) else { return }
         
-        SharedPreferences.isShowDescription = value
+        SharedPreferences.showDescription = value
         updateSetting(on: index, with: value ? 1 : 0)
     }
     

@@ -16,6 +16,8 @@ final class SettingSwitcherCellNode: ASCellNode {
     private var isOn: Bool
     
     var changeValue: ((Bool) -> Void)?
+    
+    // MARK: - Init
 
     init(title: String, isOn: Bool) {
         self.isOn = isOn
@@ -53,10 +55,13 @@ final class SettingSwitcherCellNode: ASCellNode {
         switchNode.switcher.isOn = isOn
     }
     
+    // MARK: - Events
+    
     @objc private func switchValueChanged(_ sender: UISwitch) {
-        print("Switch is \(sender.isOn)")
         changeValue?(sender.isOn)
     }
+    
+    // MARK: - Layout
     
     override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {        
         let contentStack = ASStackLayoutSpec.horizontal()
