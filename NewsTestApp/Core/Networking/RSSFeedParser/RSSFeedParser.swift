@@ -22,7 +22,7 @@ final class RSSFeedParser {
             }
             
             for urlStr in urlStrings {
-                group.addTask {
+                group.addTask(priority: .utility) {
                     do {
                         return try await self.fetchRSSItems(for: urlStr)
                     } catch {

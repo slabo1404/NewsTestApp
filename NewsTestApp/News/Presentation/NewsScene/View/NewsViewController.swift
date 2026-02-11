@@ -8,7 +8,6 @@
 import AsyncDisplayKit
 import Combine
 import SafariServices
-import SnapKit
 import UIKit
 
 final class NewsViewController: UIViewController {

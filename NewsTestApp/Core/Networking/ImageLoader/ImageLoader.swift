@@ -23,8 +23,11 @@ final class ImageLoader {
             return image
         }
         
+        var urlRequest = URLRequest(url: url)
+        urlRequest.cachePolicy = useCache ? .returnCacheDataElseLoad : .reloadIgnoringLocalCacheData
+        
         do {
-            let (data, _) = try await URLSession.shared.data(from: url)
+            let (data, _) = try await URLSession.shared.data(for: urlRequest)
             
             guard let image = UIImage(data: data) else { return nil }
             
@@ -68,7 +71,6 @@ fileprivate actor ImageCache {
         
         if let data = try? Data(contentsOf: fileURL), let image = UIImage(data: data) {
             cache.setObject(image, forKey: nsKey)
-            print("get key = \(key)")
             return image
         }
         

@@ -18,7 +18,10 @@ final class RealmNewsStorage: INewsStorage {
             newsStorageQueue.async {
                 do {
                     let realm = try Realm()
-                    let articles = realm.objects(ArticleObject.self).array().toDomain()
+                    let articles = realm.objects(ArticleObject.self)
+                        .sorted(byKeyPath: "date", ascending: false)
+                        .array()
+                        .toDomain()
                     
                     continuation.resume(returning: articles)
                 } catch {
@@ -55,7 +58,7 @@ final class RealmNewsStorage: INewsStorage {
                     }
                     
                     realm.add(newArticles, update: oldObjects.isEmpty ? .all : .modified)
-                    articlesToReturn = newArticles.toDomain()
+                    articlesToReturn = newArticles.toDomain().sorted(by: >)
                 }
                 
             } catch {

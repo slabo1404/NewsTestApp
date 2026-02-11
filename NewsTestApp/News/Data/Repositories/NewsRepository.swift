@@ -17,28 +17,27 @@ final class NewsRepository {
 
 extension NewsRepository: INewsRepository {
     func fetchNews(urls: [String]) async throws -> AsyncThrowingStream<[Article], Error> {
-        AsyncThrowingStream { continuation in
-            let task = Task {
-                let storageArticles = await newsStorage.fetchNews()
-                continuation.yield(storageArticles.sorted(by: >))
+        let storage = newsStorage
+        
+        return AsyncThrowingStream { continuation in
+            let task = Task.detached(priority: .utility) {
+                let storageArticles = await storage.fetchNews()
+                continuation.yield(storageArticles)
                 
                 do {
                     let rccItems = try await RSSFeedParser.shared.fetchArticlesForMultiple(urls: urls)
-                   
-                    let articlesFromNetwork = newsStorage.saveNews(rccItems.toObjects())
-                    continuation.yield(articlesFromNetwork.sorted(by: >))
+                    let articlesFromNetwork = await storage.saveNews(rccItems.toObjects())
                     
+                    continuation.yield(articlesFromNetwork)
                     continuation.finish()
                 } catch {
-                    switch error {
-                    case RSSFeedParserError.emptyUrls:
-                        newsStorage.saveNews([])
+                    if let rssError = error as? RSSFeedParserError, rssError == .emptyUrls {
+                        await storage.saveNews([])
                         continuation.yield([])
                         continuation.finish(throwing: error)
-                    default:
-                        continuation.finish(throwing: error)
+                    } else {
+                        continuation.finish()
                     }
-                    
                 }
             }
             
