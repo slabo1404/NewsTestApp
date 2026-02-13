@@ -10,31 +10,34 @@ import UIKit
 
 final class ImageLoader {
     static let shared = ImageLoader()
+    private let cache = ImageCache.shared
     private init() {}
+    
+    func getCachedImage(for url: String) -> UIImage? {
+        cache.getFromMemory(key: url)
+    }
     
     func clearCache() async {
         await ImageCache.shared.clear()
     }
     
     func loadImage(urlString: String, useCache: Bool) async -> UIImage? {
-        guard let url = URL(string: urlString) else { return nil }
-        
-        if useCache, let image = await ImageCache.shared.get(key: urlString) {
-            return image
+        if useCache, let cached = await cache.get(key: urlString) {
+            return cached
         }
         
-        var urlRequest = URLRequest(url: url)
-        urlRequest.cachePolicy = useCache ? .returnCacheDataElseLoad : .reloadIgnoringLocalCacheData
+        guard let url = URL(string: urlString) else { return nil }
+        
+        let config = URLSessionConfiguration.default
+        config.requestCachePolicy = useCache ? .returnCacheDataElseLoad : .reloadIgnoringLocalCacheData
         
         do {
-            let (data, _) = try await URLSession.shared.data(for: urlRequest)
-            
+            let (data, _) = try await URLSession(configuration: config).data(from: url)
             guard let image = UIImage(data: data) else { return nil }
             
             if useCache {
-                await ImageCache.shared.set(image: image, key: urlString)
+                await cache.set(image: image, key: urlString)
             }
-            
             return image
         } catch {
             return nil
@@ -42,54 +45,70 @@ final class ImageLoader {
     }
 }
 
-fileprivate actor ImageCache {
+fileprivate final class ImageCache {
     static let shared = ImageCache()
     private init() {}
-    
+
     private let cache = NSCache<NSString, UIImage>()
+    
+    private let diskActor = ImageDiskActor()
+
+    func getFromMemory(key: String) -> UIImage? {
+        cache.object(forKey: key as NSString)
+    }
+
+    func get(key: String) async -> UIImage? {
+        if let cached = getFromMemory(key: key) {
+            return cached
+        }
         
+        if let diskImage = await diskActor.loadFromDisk(key: key) {
+            cache.setObject(diskImage, forKey: key as NSString)
+            return diskImage
+        }
+        
+        return nil
+    }
+
+    func set(image: UIImage, key: String) async {
+        cache.setObject(image, forKey: key as NSString)
+        await diskActor.saveToDisk(image: image, key: key)
+    }
+
+    func clear() async {
+        cache.removeAllObjects()
+        await diskActor.clearDisk()
+    }
+}
+
+fileprivate actor ImageDiskActor {
     private var diskPath: URL = {
         let url = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("ImageCache")
         try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
         return url
     }()
-    
-    private func getFileURL(for key: String) -> URL {
-        let path = Data(key.utf8).base64EncodedString().replacingOccurrences(of: "/", with: "_")
-        return diskPath.appendingPathComponent(path)
-    }
-    
-    func get(key: String) async -> UIImage? {
-        let nsKey = NSString(string: key)
-        
-        if let cached = cache.object(forKey: nsKey) {
-            return cached
-        }
-        
+
+    func loadFromDisk(key: String) -> UIImage? {
         let fileURL = getFileURL(for: key)
-        
-        if let data = try? Data(contentsOf: fileURL), let image = UIImage(data: data) {
-            cache.setObject(image, forKey: nsKey)
-            return image
-        }
-        
-        return nil
+        guard let data = try? Data(contentsOf: fileURL) else { return nil }
+        return UIImage(data: data)
     }
-    
-    func set(image: UIImage, key: String) {
-        cache.setObject(image, forKey: NSString(string: key))
-        
+
+    func saveToDisk(image: UIImage, key: String) {
         let fileURL = getFileURL(for: key)
-        
         if let data = image.jpegData(compressionQuality: 0.6) {
             try? data.write(to: fileURL)
         }
     }
-    
-    func clear() {
-        cache.removeAllObjects()
+
+    func clearDisk() {
         try? FileManager.default.removeItem(at: diskPath)
         try? FileManager.default.createDirectory(at: diskPath, withIntermediateDirectories: true)
+    }
+
+    private func getFileURL(for key: String) -> URL {
+        let path = Data(key.utf8).base64EncodedString().replacingOccurrences(of: "/", with: "_")
+        return diskPath.appendingPathComponent(path)
     }
 }

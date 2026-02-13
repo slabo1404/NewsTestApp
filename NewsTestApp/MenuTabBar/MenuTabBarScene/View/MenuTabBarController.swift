@@ -9,30 +9,54 @@ import UIKit
 import DITranquillity
 
 final class MenuTabBarController: UITabBarController {
-    // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let newsViewController: NewsViewController = AppDependencyContainer.container.resolve()
-        let newsNavigationController = UINavigationController(rootViewController: newsViewController)
-        newsNavigationController.tabBarItem = UITabBarItem(
-            title: "Новости",
-            image: UIImage(systemName: "text.bubble.badge.clock"),
-            selectedImage: UIImage(systemName: "text.bubble.badge.clock.fill")
-        )
+        view.backgroundColor = .white
+        overrideUserInterfaceStyle = .light
         
-        let settingsViewController: SettingsViewCotroller = AppDependencyContainer.container.resolve()
-        let settingsNavigationController = UINavigationController(rootViewController: settingsViewController)
-        settingsNavigationController.tabBarItem = UITabBarItem(
-            title: "Настройки",
-            image: UIImage(systemName: "rectangle.grid.1x3"),
-            selectedImage: UIImage(systemName: "rectangle.grid.1x3.fill")
-        )
+        setupTabBarAppearance()
+        setupViewControllers()
+    }
+    
+    private func setupViewControllers() {
+        let newsVC: NewsViewController = AppDependencyContainer.container.resolve()
+        let settingsVC: SettingsViewCotroller = AppDependencyContainer.container.resolve()
         
         viewControllers = [
-            newsNavigationController,
-            settingsNavigationController
+            createNavigationController(root: newsVC, title: "Новости", icon: "text.bubble.badge.clock"),
+            createNavigationController(root: settingsVC, title: "Настройки", icon: "rectangle.grid.1x3")
         ]
+    }
+    
+    private func createNavigationController(root: UIViewController, title: String, icon: String) -> UINavigationController {
+        let nav = UINavigationController(rootViewController: root)
+        
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = .white
+        appearance.titleTextAttributes = [.foregroundColor: UIColor.black]
+        
+        nav.navigationBar.standardAppearance = appearance
+        nav.navigationBar.scrollEdgeAppearance = appearance
+        nav.navigationBar.compactAppearance = appearance
+        
+        nav.tabBarItem = UITabBarItem(
+            title: title,
+            image: UIImage(systemName: icon),
+            selectedImage: UIImage(systemName: "\(icon).fill")
+        )
+        
+        return nav
+    }
+    
+    private func setupTabBarAppearance() {
+        let appearance = UITabBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = .white
+        
+        tabBar.standardAppearance = appearance
+        tabBar.scrollEdgeAppearance = appearance
     }
 }

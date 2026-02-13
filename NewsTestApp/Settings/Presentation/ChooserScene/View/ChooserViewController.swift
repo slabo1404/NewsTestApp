@@ -65,6 +65,7 @@ final class ChooserViewController: UIViewController {
 private extension ChooserViewController {
     func setupUI() {
         navigationItem.title = navigationTitle
+        view.backgroundColor = UIColor.white
         view.addSubnode(tableNode)
     }
     

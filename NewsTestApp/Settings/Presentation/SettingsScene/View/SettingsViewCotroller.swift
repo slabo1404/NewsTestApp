@@ -58,6 +58,7 @@ final class SettingsViewCotroller: UIViewController {
 private extension SettingsViewCotroller {
     func setupUI() {
         navigationItem.title = "Настройки"
+        view.backgroundColor = UIColor.white
         view.addSubnode(tableNode)
     }
     

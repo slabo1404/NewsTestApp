@@ -104,6 +104,12 @@ final class NewsViewController: UIViewController {
 private extension NewsViewController {
     func setupNavigationBar() {
         navigationItem.title = "Новости"
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "inset.filled.topthird.middlethird.bottomthird.rectangle"),
+            style: .plain,
+            target: self,
+            action: #selector(changeLayout))
     }
     
     func setupUI() {
@@ -193,11 +199,11 @@ private extension NewsViewController {
             .sink { [weak self] changes in
                 self?.tableNode.performBatchUpdates {
                     if !changes.insertions.isEmpty {
-                        self?.tableNode.insertRows(at: changes.insertions, with: .automatic)
+                        self?.tableNode.insertRows(at: changes.insertions, with: .fade)
                     }
                     
                     if !changes.removals.isEmpty {
-                        self?.tableNode.deleteRows(at: changes.removals, with: .automatic)
+                        self?.tableNode.deleteRows(at: changes.removals, with: .fade)
                     }
                 }
             }
@@ -229,6 +235,14 @@ private extension NewsViewController {
         }
         
         startTimerIfNeeded()
+    }
+    
+    @objc func changeLayout() {
+        let showDescription = SharedPreferences.showDescription
+        
+        SharedPreferences.showDescription = !showDescription
+        tableManager.updateShowDesription(!showDescription)
+        tableNode.reloadData()
     }
 }
 

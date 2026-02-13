@@ -33,6 +33,8 @@ final class NewsCellNode: ASCellNode {
         separatorInset = UIEdgeInsets(top: 0, left: 84, bottom: 0, right: 0)
         selectionStyle = .none
         
+        neverShowPlaceholders = true
+        
         imageNode.style.preferredSize = imageSize
         imageNode.cornerRadius = 4
         imageNode.cornerRoundingType = .precomposited
@@ -82,14 +84,19 @@ final class NewsCellNode: ASCellNode {
     
     // MARK: - Lifecycle
     
-    override func didLoad() {
-        super.didLoad()
+    override func didEnterDisplayState() {
+        super.didEnterDisplayState()
         
-        // MARK: - Fetch image
+        guard let url = article.imageUrl else { return }
+        
+        if useImageCache, let cachedImage = ImageLoader.shared.getCachedImage(for: url) {
+            imageNode.image = cachedImage.resize(to: imageSize)
+            return
+        }
         
         Task {
-            if let imageUrlString = article.imageUrl,
-               let image = await ImageLoader.shared.loadImage(urlString: imageUrlString, useCache: useImageCache) {
+            if let image = await ImageLoader.shared.loadImage(urlString: url, useCache: useImageCache) {
+                if Task.isCancelled { return }
                 imageNode.image = image.resize(to: imageSize)
             }
         }
